@@ -138,12 +138,11 @@ DtmfGenerator::DtmfGenerator(
 
 void DtmfGenerator::setup()
 {
-    // enable output pin (pin D3 aka PF5, see datasheet p146).
-    PORTMUX.TCBROUTEA |= PORTMUX_TCB1_bm;
-
     // Configure timer TCB1 of the chip for PWM.
     // See Chapter 21 of ATmega4809 datasheet.
 
+    // enable PWM on output pin (pin D3 aka PF5, see datasheet p146).
+    PORTMUX.TCBROUTEA |= PORTMUX_TCB1_bm;
     // schedule counter speed at µC speed / 1 (i.e. same as XTAL)
     TCB1.CTRLA |= TCB_CLKSEL_CLKDIV1_gc;
     // quiet the output (by setting the compare value to 0)
@@ -256,7 +255,8 @@ void DtmfGenerator::generateDtmf()
  */
 void DtmfGenerator::setDutyCycle(unsigned int dutyCycle)
 {
-    dutyCycle << 8;
-
-    TCB1.CCMP = dutyCycle | TCB1_MAX_VALUE;
+    // These values has to be set separatly (i.e. not by using the CCMP 16 bit
+    // registry entry directly).
+    TCB1.CCMPL = TCB1_MAX_VALUE;
+    TCB1.CCMPH = dutyCycle;
 }
