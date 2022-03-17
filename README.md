@@ -1,11 +1,9 @@
 # Socotel S63 pulse to tone converter
 
-An attempt to write code for the
+The aim of this project is to create a pulse to tone converter for the Socotel
+S63 rotary phone, using an
 [Arduino Nano Every](https://docs.arduino.cc/hardware/nano-every) board
 (ATMEGA4809 chip, SKU ABX00028).
-
-The aim of this project is to create a pulse to tone converter for the Socotel
-S63 rotary phone.
 
 **:warning: This is very much a work in progress.
 It is not ready yet for any usage. :warning:**
@@ -121,6 +119,8 @@ S63 wiring, and other electronic components placement) (e.g. using Fritzing).
 
 - Support `*` and `#` dialings. May require some dialed digits combination and
 timeouts.
+- Put the board asleep when the phone is hung up in order to save power
+consumption.
 
 ## Links
 
