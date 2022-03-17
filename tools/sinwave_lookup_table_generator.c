@@ -170,7 +170,7 @@ int main (int argc, char **argv) {
             case 'r':
                 received_values_range_opt = atoi(optarg);
 
-                if (!(received_values_range_opt) >= 0) {
+                if (!received_values_range_opt >= 0) {
                     fprintf(stderr, "\
 The values range should be greater or equal to 0, received \"%d\".\n\
 ", received_values_range_opt);
@@ -198,7 +198,7 @@ The values range should be greater or equal to 0, received \"%d\".\n\
         }
     }
 
-    if (!(samples_count > 0)) {
+    if (!samples_count > 0) {
         exit(EXIT_SUCCESS);
     }
 

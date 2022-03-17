@@ -53,10 +53,21 @@ static const unsigned int DtmfGenerator::sinwaveLut[PERIOD_SAMPLES_COUNT] = {
 
 static unsigned int DtmfGenerator::computeToneStepSize(unsigned int tone)
 {
-    // use a float to handle large numbers in the formula
-    float fTone = tone * 1.0;
+    // Use a float to handle large numbers in the formula.
+    // Also, apply a scale to have a significant step size, in order to keep the
+    // precision in the formula (as the precision is in the decimals, before
+    // applying this scale).
+    // Other similar projects are using a `8` multiplier, whith an `(exceed 8)`
+    // hint about what this multiplier is supposed to do. I don't get why,
+    // (it's probably related to the amount of bits used in the counter, e.g.
+    // for the period samples count or the max value of the PWM duty cycle).
+    // Anyway, using this scale, I'm able to produce step sizes that are similar
+    // with what they are also producing.
+    //
+    // @see https://github.com/inaxeon/rotarydial/blob/6e3ef957c9aef3cefc727e853427a96fab0c2e6d/dtmf.c#L79
+    float scale = 16.0;
 
-    return (unsigned int) round((PERIOD_SAMPLES_COUNT * fTone) / PERIOD_FREQUENCY);
+    return (unsigned int) round((scale * PERIOD_SAMPLES_COUNT * tone) / PERIOD_FREQUENCY);
 }
 
 /*
@@ -206,6 +217,9 @@ void DtmfGenerator::scheduleDtmfGeneration()
     this->toneHighStepSize = digitToTonesStepSize[dialedDigit][0];
     this->toneLowStepSize = digitToTonesStepSize[dialedDigit][1];
 
+    Serial.println((String) "toneHighStepSize = " + this->toneHighStepSize);
+    Serial.println((String) "toneLowStepSize = " + this->toneLowStepSize);
+
     this->toneHighPos = 0;
     this->toneLowPos = 0;
 
@@ -217,7 +231,7 @@ void DtmfGenerator::generateDtmf()
     unsigned int toneHighWave = sinwaveLut[this->toneHighPos];
     unsigned int toneLowWave = sinwaveLut[this->toneLowPos];
 
-    unsigned int sumWave = (unsigned int) ((toneHighWave + toneLowWave) / 2);
+    unsigned int sumWave = (unsigned int) round((toneHighWave + toneLowWave) / 2);
 
     this->setDutyCycle(sumWave);
 
@@ -237,12 +251,12 @@ void DtmfGenerator::generateDtmf()
 }
 
 /**
- * Set TCB1 counter compare value to have a `pulsesCount` duty cycle (CCMPH),
+ * Set TCB1 counter compare value to have a `dutyCycle` duty cycle (CCMPH),
  * and to have the 8bit pulse period (CCMPL).
  */
-void DtmfGenerator::setDutyCycle(unsigned int pulsesCount)
+void DtmfGenerator::setDutyCycle(unsigned int dutyCycle)
 {
-    pulsesCount << 8;
+    dutyCycle << 8;
 
-    TCB1.CCMP = pulsesCount | TCB1_MAX_VALUE;
+    TCB1.CCMP = dutyCycle | TCB1_MAX_VALUE;
 }
