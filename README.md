@@ -70,6 +70,14 @@ Finally, compile the app and upload it to the board :
 $ make compile-release upload
 ```
 
+If the upload task hangs with the following message :
+
+```
+avrdude: jtagmkII_getsync(): sign-on command: status -1
+```
+
+try to push the `reset` button on the board, and to run again the `upload` task.
+
 ## Development
 
 To open a shell inside the docker container, run :
@@ -142,6 +150,7 @@ consumption.
 - Other projects hacking a rotary phone :
     - https://github.com/ThomasChappe/S63_Arduino
     - https://github.com/revolunet/s63
+    - http://boris0.blogspot.com/2013/09/rotary-dial-for-digital-age.html
 
 - DTMF generation examples and PWM explanations :
     - http://ww1.microchip.com/downloads/en/Appnotes/doc1982.pdf
