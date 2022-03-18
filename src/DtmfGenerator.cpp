@@ -216,13 +216,24 @@ void DtmfGenerator::scheduleDtmfGeneration()
     this->toneHighStepSize = digitToTonesStepSize[dialedDigit][0];
     this->toneLowStepSize = digitToTonesStepSize[dialedDigit][1];
 
-    Serial.println((String) "toneHighStepSize = " + this->toneHighStepSize);
-    Serial.println((String) "toneLowStepSize = " + this->toneLowStepSize);
-
     this->toneHighPos = 0;
     this->toneLowPos = 0;
 
-    this->remainingGenerationCycles = (int) ((DTMF_DURATION_MS * PERIOD_FREQUENCY) / 1000);
+    // Although I first though that the value of the remaining generation cycles
+    // would have been the result of the following formula :
+    // (int) ((DTMF_DURATION_MS * PERIOD_FREQUENCY) / 1000)
+    // it appears that it leads to veeery long DTMF durations (e.g. for an
+    // expected duration of 300ms, it leads to an actual 19200ms duration :o ).
+    // So, even if it appears to be counter intuitive to directly set the
+    // expected DTMF duration to this var, it actually produces the expected
+    // duration :p .
+    // This gap with the expected duration and the actual duration when using
+    // the formula may be because of how this program is designed. All the logic
+    // is done during the ISR (which acts like a clock tick), whereas other
+    // similar projects are only using the ISR to compute the new duty cycle of
+    // the PWM. I'd like to keep the logic as it is for now, as I'm not relying
+    // on any `delay` calls, opposed to other similar projects.
+    this->remainingGenerationCycles = DTMF_DURATION_MS;
 }
 
 void DtmfGenerator::generateDtmf()
