@@ -115,6 +115,11 @@ $ make monitor
 
 - [x] Count pulses to determine the dialed digit.
 - [ ] [WIP] Generate the DTMF tone corresponding to the dialed digit.
+    - See [this formula](http://stssnsb.free.fr/exemples/Cpassebas/indexCpassbas.html)
+to know how to compute the cutting frequency of the low pass filter.
+Also, the figure 7 of [this link](http://stssnsb.free.fr/exemples/Cpassebas/indexCpassbas.html)
+uses a low pass filer, the capacity of the components would be appropriate here
+too :).
 - [ ] Be able to make a call. Would make sure if the dialed digits could be sent
 one by one when dialing, or if they should be sent in a row at the end of the
 dialing (after a timeout) instead.
